@@ -16,6 +16,10 @@ COPY . .
 
 RUN composer install --no-dev --optimize-autoloader
 
+RUN mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views bootstrap/cache \
+    && touch database/database.sqlite \
+    && chmod -R 777 storage bootstrap/cache database
+
 RUN php artisan config:clear
 
 EXPOSE 10000
