@@ -1,0 +1,43 @@
+services:
+  - type: web
+    name: e-pautas
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /up
+    preDeployCommand: php artisan migrate --force
+    initialDeployHook: php artisan db:seed --force
+
+    envVars:
+      - key: APP_ENV
+        value: production
+
+      - key: APP_DEBUG
+        value: "false"
+
+      - key: APP_KEY
+        generateValue: true
+
+      - key: LOG_CHANNEL
+        value: stderr
+
+      - key: DB_CONNECTION
+        value: pgsql
+
+      - key: DATABASE_URL
+        fromDatabase:
+          name: e-pautas-db
+          property: connectionString
+
+      - key: SESSION_DRIVER
+        value: database
+
+      - key: CACHE_STORE
+        value: database
+
+      - key: QUEUE_CONNECTION
+        value: sync
+
+databases:
+  - name: e-pautas-db
+    databaseName: e_pautas
+    user: e_pautas
