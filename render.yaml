@@ -15,6 +15,9 @@ services:
       - key: APP_KEY
         generateValue: true
 
+      - key: APP_URL
+        value: https://e-pautas.onrender.com
+
       - key: LOG_CHANNEL
         value: stderr
 
