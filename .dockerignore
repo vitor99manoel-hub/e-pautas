@@ -4,3 +4,10 @@ node_modules
 .git
 database/database.sqlite
 storage/logs/*.log
+**/*.sqlite
+**/*.sqlite-*
+**/*.db
+**/*.dump
+backups
+storage/framework/sessions/*
+bootstrap/cache/*.php
