@@ -1,0 +1,43 @@
+name: Storage compatibility
+on:
+  pull_request:
+  push:
+    branches: [fix/render-storage-persistence]
+permissions:
+  contents: read
+jobs:
+  storage:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: epautas_test
+          POSTGRES_USER: epautas
+          POSTGRES_PASSWORD: test-only
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready --health-interval 10s
+          --health-timeout 5s --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: pdo_sqlite, pdo_pgsql
+          coverage: none
+      - run: composer install --no-interaction --prefer-dist
+      - run: vendor/bin/phpunit tests/Feature/StorageVerificationTest.php
+      - name: PostgreSQL migrations, persistence and verification
+        env:
+          APP_ENV: production
+          APP_KEY: base64:a2tra2tra2tra2tra2tra2tra2tra2tra2tra2tra2tra2s=
+          DB_CONNECTION: pgsql
+          DB_URL: postgres://epautas:test-only@127.0.0.1:5432/epautas_test
+          DB_SSLMODE: disable
+        run: |
+          php artisan migrate --force
+          php artisan storage:verify
+          php tests/storage-postgres.php
+          php artisan migrate --force
+          php artisan storage:verify

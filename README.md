@@ -65,17 +65,26 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
 
-## Deploy no Render
+## Deploy e persistência no Render
 
-Este projeto foi preparado para rodar no Render com Docker e PostgreSQL.
+Laravel 11 / PHP 8.2. O `render.yaml` principal usa **PostgreSQL externo à imagem**,
+selecionado ou provisionado manualmente no Render. Ele não contrata banco nem disco.
+Defina `DB_URL` com a Internal Database URL e preserve a `APP_KEY` atual.
+`DATABASE_URL` não é lida por esta configuração Laravel.
 
-1. Crie um novo "Web Service" a partir do repositório do GitHub.
-2. Aponte o Render para o arquivo `render.yaml` na raiz do projeto.
-3. Use a variável `DATABASE_URL` gerada pelo banco PostgreSQL do Render.
-4. Mantenha `APP_DEBUG=false` e defina `APP_ENV=production`.
-5. Depois do primeiro deploy, faça login com:
-   - Admin: `admin@epautas.com` / `admin123`
-   - Pauteiro: `joao@epautas.com` / `123456`
-   - Comprador: `portal@epautas.com` / `123456`
+**Antes de qualquer redeploy, alteração de plano, disco ou variáveis em produção,
+exporte a base atualmente em execução.** Trocar variáveis ou executar migrations
+não transfere os dados do SQLite para PostgreSQL.
 
-Se quiser, depois eu posso te passar um checklist final de publicação e um resumo da arquitetura para apresentar.
+- Recomendado: PostgreSQL gerenciado **pago**, com recuperação e backups testados.
+- Alternativa paga de instância única: `deploy/render.sqlite.yaml`, disco em
+  `/var/data`, banco em `/var/data/database.sqlite`; exige restauração prévia.
+- SQLite no diretório da aplicação é apenas para desenvolvimento local.
+- Build e startup não executam seeds nem migrations; o startup recusa armazenamento
+  inseguro ou schema pendente. Seeds são demonstrativos e não devem rodar em produção.
+- Sessões/carrinho e cache usam o banco em produção; fila continua síncrona.
+
+Consulte [arquitetura, custos, migração, validação e rollback](docs/ARMAZENAMENTO.md).
+Não há credenciais padrão válidas para um novo ambiente de produção: crie o
+administrador por procedimento controlado. Se contas de demonstração já existem,
+troque suas senhas e revise o acesso após o backup.
