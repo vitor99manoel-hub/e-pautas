@@ -7,7 +7,7 @@ services:
     dockerfilePath: ./Dockerfile
     healthCheckPath: /up
     plan: 0.5c-512mb
-    autoDeployTrigger: off
+    autoDeployTrigger: "off"
     disk:
       name: epautas-data
       mountPath: /var/data

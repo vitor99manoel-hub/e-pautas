@@ -33,7 +33,7 @@ class VerifyStorage extends Command
                     $mounted = collect($mounts)->contains(function ($line) {
                         return (explode(' ', $line)[4] ?? '') === '/var/data';
                     });
-                    if (! $mounted || ! $path || ! str_starts_with($path, '/var/data/') || ! is_writable($path)) {
+                    if (! $mounted || ! $path || ! str_starts_with($path, '/var/data/') || ! is_writable($path) || ! is_writable(dirname($path))) {
                         throw new RuntimeException('SQLite requer disco montado em /var/data e arquivo existente gravável dentro dele. Restaure o backup antes de iniciar.');
                     }
                 }
